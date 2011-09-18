@@ -38,7 +38,12 @@
 
 #pragma mark -
 #pragma mark Simple properties
-@synthesize tile, layer, lastUsedTime;
+@synthesize tile, lastUsedTime;
+
+- (CALayer *) layer
+{
+    return layer;
+}
 
 #pragma mark -
 #pragma mark NSObject comparison
@@ -62,19 +67,19 @@
 	if (![super init])
 		return nil;
 	
-	tile = _tile;
-	layer = nil;
-	lastUsedTime = nil;
-	screenLocation = CGRectZero;
-
-        [self makeLayer];
-
-	[self touch];
+    tile = _tile;
+    layer = nil;
+    lastUsedTime = nil;
+    screenLocation = CGRectZero;
+    
+    [self makeLayer];
+    
+    [self touch];
 	
-	[[NSNotificationCenter defaultCenter] addObserver:self
-						selector:@selector(tileRemovedFromScreen:)
-						name:RMMapImageRemovedFromScreenNotification object:self];
-		
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(tileRemovedFromScreen:)
+                                                 name:RMMapImageRemovedFromScreenNotification object:self];
+    
 	return self;
 }
 
