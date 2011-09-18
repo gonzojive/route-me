@@ -34,7 +34,7 @@
 
 @interface RMMarkerManager : NSObject {
 	RMMapContents *contents;
-        CGAffineTransform rotationTransform;
+    CGAffineTransform rotationTransform;
 }
 
 @property (assign, readwrite)  RMMapContents *contents;

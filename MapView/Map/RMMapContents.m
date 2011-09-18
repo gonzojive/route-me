@@ -603,21 +603,43 @@
 - (void)zoomOutToNextNativeZoomAt:(CGPoint) pivot {
 	[self zoomOutToNextNativeZoomAt: pivot animated: FALSE];
 }
- 
 
-- (void) drawRect: (CGRect) aRect
+
+-(void)setMaxZoom:(float)newMaxZoom
 {
-	[renderer drawRect:aRect];
+	maxZoom = newMaxZoom;
 }
+
+-(void)setMinZoom:(float)newMinZoom
+{
+	minZoom = newMinZoom;
+    
+    NSAssert(!tileSource || (([tileSource minZoom] - minZoom) <= 1.0), @"Graphics & memory are overly taxed if [contents minZoom] is more than 1.5 smaller than [tileSource minZoom]");
+}
+
+-(float) zoom
+{
+    return [mercatorToTileProjection calculateZoomFromScale:[mercatorToScreenProjection metersPerPixel]];
+}
+
+/// if #zoom is outside of range #minZoom to #maxZoom, zoom level is clamped to that range.
+-(void) setZoom: (float) zoom
+{
+    zoom = (zoom > maxZoom) ? maxZoom : zoom;
+    zoom = (zoom < minZoom) ? minZoom : zoom;
+    
+    float scale = [mercatorToTileProjection calculateScaleFromZoom:zoom];
+    
+    [self setMetersPerPixel:scale];
+}
+
+#pragma mark -
+#pragma mark Manipulating the tile source
 
 -(void)removeAllCachedImages
 {
 	[tileSource removeAllCachedImages];
 }
-
-
-#pragma mark -
-#pragma mark Properties
 
 - (void) setTileSource: (id<RMTileSource>)newTileSource
 {
@@ -630,7 +652,7 @@
 	[tileSource release];
 	tileSource = newCachedTileSource;
 
-        NSAssert(([tileSource minZoom] - minZoom) <= 1.0, @"Graphics & memory are overly taxed if [contents minZoom] is more than 1.5 smaller than [tileSource minZoom]");
+    NSAssert(([tileSource minZoom] - minZoom) <= 1.0, @"Graphics & memory are overly taxed if [contents minZoom] is more than 1.5 smaller than [tileSource minZoom]");
 	
 	[projection release];
 	projection = [[tileSource projection] retain];
@@ -640,13 +662,25 @@
 
 	[imagesOnScreen setTileSource:tileSource];
 
-        [tileLoader reset];
+    [tileLoader reset];
 	[tileLoader reload];
 }
 
 - (id<RMTileSource>) tileSource
 {
 	return [[tileSource retain] autorelease];
+}
+
+#pragma mark -
+#pragma mark Rendering
+- (CALayer *)layer
+{
+	return [[layer retain] autorelease];
+}
+
+- (void) drawRect: (CGRect) aRect
+{
+	[renderer drawRect:aRect];
 }
 
 - (void) setRenderer: (RMMapRenderer*) newRenderer
@@ -679,6 +713,8 @@
 	return [[renderer retain] autorelease];
 }
 
+#pragma mark -
+#pragma mark Background layer (displayed while tiles are loading)
 - (void) setBackground: (RMMapLayer*) aLayer
 {
 	if (background == aLayer) return;
@@ -709,6 +745,8 @@
 	return [[background retain] autorelease];
 }
 
+#pragma mark -
+#pragma mark Overlay (subview for markers and paths)
 - (void) setOverlay: (RMLayerCollection*) aLayer
 {
 	if (overlay == aLayer) return;
@@ -748,6 +786,8 @@
 	return [[overlay retain] autorelease];
 }
 
+#pragma mark -
+#pragma mark Centering the map
 - (CLLocationCoordinate2D) mapCenter
 {
 	RMProjectedPoint aPoint = [mercatorToScreenProjection projectedCenter];
@@ -773,6 +813,8 @@
 	[overlay setNeedsDisplay];
 }
 
+#pragma mark -
+#pragma mark Projected bounds manipulation
 -(RMProjectedRect) projectedBounds
 {
 	return [mercatorToScreenProjection projectedBounds];
@@ -825,34 +867,6 @@
     return [mercatorToScreenProjection metersPerPixel] / screenScale;
 }
 
--(void)setMaxZoom:(float)newMaxZoom
-{
-	maxZoom = newMaxZoom;
-}
-
--(void)setMinZoom:(float)newMinZoom
-{
-	minZoom = newMinZoom;
-
-        NSAssert(!tileSource || (([tileSource minZoom] - minZoom) <= 1.0), @"Graphics & memory are overly taxed if [contents minZoom] is more than 1.5 smaller than [tileSource minZoom]");
-}
-
--(float) zoom
-{
-        return [mercatorToTileProjection calculateZoomFromScale:[mercatorToScreenProjection metersPerPixel]];
-}
-
-/// if #zoom is outside of range #minZoom to #maxZoom, zoom level is clamped to that range.
--(void) setZoom: (float) zoom
-{
-        zoom = (zoom > maxZoom) ? maxZoom : zoom;
-        zoom = (zoom < minZoom) ? minZoom : zoom;
-
-        float scale = [mercatorToTileProjection calculateScaleFromZoom:zoom];
-
-        [self setMetersPerPixel:scale];
-}
-
 -(RMTileImageSet*) imagesOnScreen
 {
 	return [[imagesOnScreen retain] autorelease];
@@ -862,6 +876,9 @@
 {
 	return [[tileLoader retain] autorelease];
 }
+
+#pragma mark -
+#pragma mark Projection
 
 -(RMProjection*) projection
 {
@@ -876,11 +893,8 @@
 	return [[mercatorToScreenProjection retain] autorelease];
 }
 
-- (CALayer *)layer
-{
-	return [[layer retain] autorelease];
-}
-
+#pragma mark -
+#pragma mark So-called Expensive operations
 static BOOL _performExpensiveOperations = YES;
 + (BOOL) performExpensiveOperations
 {
@@ -1071,6 +1085,9 @@ static BOOL _performExpensiveOperations = YES;
 	[imagesOnScreen printDebuggingInformation];
 }
 
+#pragma mark -
+#pragma mark Tile update delegate
+
 @dynamic tilesUpdateDelegate;
 
 - (void) setTilesUpdateDelegate: (id<RMTilesUpdateDelegate>) _tilesUpdateDelegate
@@ -1085,6 +1102,10 @@ static BOOL _performExpensiveOperations = YES;
 {
 	return tilesUpdateDelegate;
 }
+
+#pragma mark -
+#pragma mark Properties
+
 
 - (void)setRotation:(float)angle
 { 

@@ -42,7 +42,20 @@ typedef NSImage UIImage;
 @class RMTileImage;
 @class NSData;
 
-@interface RMTileImage : NSObject {
+/*! RMTileImage loads and displays a particular map tile in the context of some view.
+ 
+ At the moment, this object is responsible for both loading the image and rendering it.  The rendering
+ scheme is ugly because it consists of a single CALayer object.  This implicitly assumes that a particular
+ RMTileImage will be used in only one UIView. Might see some interesting crashes if you have two RMMapViews
+ using the same tile source.
+ 
+ Every RMTileImage will observe for an RMMapImageLoadingCancelledNotification to prevent loading.
+ 
+ Upon the image being loaded, RMTileImage will also post an RMMapImageLoadedNotification to the default
+ notification center.
+ */
+@interface RMTileImage : NSObject
+{
 	// I know this is a bit nasty.
 	RMTile tile;
 	CGRect screenLocation;
@@ -56,37 +69,63 @@ typedef NSImage UIImage;
 	CALayer *layer;
 }
 
+/// Creates an RMTileImage given an RMTile point, but does not load an image.
 - (id) initWithTile: (RMTile)tile;
 
+/// Returns a new RMTileImage that has an RMTileDummy() as the tile.  The tile will not have a loaded image.
 + (RMTileImage*) dummyTile: (RMTile)tile;
 
-//- (void)drawInRect:(CGRect)rect;
+/// GET RID OF THIS
 - (void)draw;
 
+/// Creates a tile image given an RMTile point and a URL of the iamge to load.
 + (RMTileImage*)imageForTile: (RMTile) tile withURL: (NSString*)url;
+/// Creates a tile image given an RMTile point and a file of an image to load.
 + (RMTileImage*)imageForTile: (RMTile) tile fromFile: (NSString*)filename;
+/// Creates a tile image given an RMTile point and a data representation of the image.
 + (RMTileImage*)imageForTile: (RMTile) tile withData: (NSData*)data;
+/// Creates a tile image given an RMTile point and an FMDatabase.
+/// The RMTile point is enough to identify the image to be loaded from the database.
 + (RMTileImage*)imageForTile: (RMTile) tile fromDB: (FMDatabase*)db;
 
+/// Adjusts the screen location to account for a translation.  Moves the offset of the tile
+/// to screenLocation.origin + delta
 - (void)moveBy: (CGSize) delta;
+
+/// Adjusts the screen rectangle to account for a zoom action.
+/// Uses [Code]RMScaleCGRectAboutPoint(screenLocation, zoomFactor, center)[/Code] to update screen location.
 - (void)zoomByFactor: (float) zoomFactor near:(CGPoint) center;
 
+/// Creates the CALayer accessible with #layer.  See #layer for details.
 - (void)makeLayer;
 
+/// Prevents the tile from loading further.
 - (void)cancelLoading;
 
+/// Updates the object with image data, and posts a notification that the image tile was loaded.
 - (void)updateImageUsingData: (NSData*) data;
+/// Updates the object with an image, setting the layer contents.
 - (void)updateImageUsingImage: (UIImage*) image;
 
+/// Updates the lastUsedTime for this tile to help with caching.
 - (void)touch;
 
+/// Returns true if the image for this RMTileImage is available.
 - (BOOL)isLoaded;
 
+/// Displays an image in the place of the real tile image.
 - (void) displayProxy:(UIImage*)img;
 
+/// The location inside some view of this particular tile.
 @property (readwrite, assign) CGRect screenLocation;
+/// The tile identifier of this tile image.
+/// For each tile source, each tile image has a unique RMTile representations
 @property (readonly, assign) RMTile tile;
+/// The core animation layer that is used to render this particular tile.
+/// Note that the current architecture allows a tile to be loaded in only one
+/// view at a time (as a single CALayer object cannot reside in multiple views).
 @property (readonly) CALayer *layer;
+/// The last time at which #touch was called.
 @property (readonly) NSDate *lastUsedTime;
 
 @end

@@ -36,8 +36,27 @@
 
 @implementation RMTileImage
 
+#pragma mark -
+#pragma mark Simple properties
 @synthesize tile, layer, lastUsedTime;
 
+#pragma mark -
+#pragma mark NSObject comparison
+- (NSUInteger)hash
+{
+	return (NSUInteger)RMTileHash(tile);
+}
+
+- (BOOL)isEqual:(id)anObject
+{
+	if (![anObject isKindOfClass:[RMTileImage class]])
+		return NO;
+    
+	return RMTilesEqual(tile, [(RMTileImage*)anObject tile]);
+}
+
+#pragma mark -
+#pragma mark Initialization and deallocation
 - (id) initWithTile: (RMTile)_tile
 {
 	if (![super init])
@@ -58,11 +77,6 @@
 		
 	return self;
 }
-	 
--(void) tileRemovedFromScreen: (NSNotification*) notification
-{
-	[self cancelLoading];
-}
 
 -(id) init
 {
@@ -71,25 +85,25 @@
 	return nil;
 }
 
-+ (RMTileImage*) dummyTile: (RMTile)tile
-{
-	return [[[RMTileImage alloc] initWithTile:tile] autorelease];
-}
-
 - (void)dealloc
 {
 //	RMLog(@"Removing tile image %d %d %d", tile.x, tile.y, tile.zoom);
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 
-	[layer release]; layer = nil;
-	[lastUsedTime release]; lastUsedTime = nil;
+	[layer release];
+    layer = nil;
+	[lastUsedTime release];
+    lastUsedTime = nil;
 	
 	[super dealloc];
 }
 
--(void)draw
+#pragma mark -
+#pragma mark Class methods for creating tiles
++ (RMTileImage*) dummyTile: (RMTile)tile
 {
+	return [[[RMTileImage alloc] initWithTile:tile] autorelease];
 }
 
 + (RMTileImage*)imageForTile:(RMTile) _tile withURL: (NSString*)url
@@ -121,13 +135,25 @@
 	return [[[RMDBTileImage alloc] initWithTile: _tile fromDB:db] autorelease];
 }
 
+#pragma mark -
+#pragma mark Cancelling image loading
+-(void) tileRemovedFromScreen: (NSNotification*) notification
+{
+	[self cancelLoading];
+}
+
+-(void)draw
+{
+}
+
 -(void) cancelLoading
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:RMMapImageLoadingCancelledNotification
 														object:self];
 }
 
-
+#pragma mark -
+#pragma mark Image loading
 - (void)updateImageUsingData: (NSData*) data
 {
        [self updateImageUsingImage:[UIImage imageWithData:data]];
@@ -139,7 +165,6 @@
 - (void)updateImageUsingImage: (UIImage*) rawImage
 {
 	layer.contents = (id)[rawImage CGImage];
-//	[self animateIn];
 }
 
 - (BOOL)isLoaded
@@ -147,25 +172,48 @@
 	return (layer != nil && layer.contents != NULL);
 }
 
-- (NSUInteger)hash
-{
-	return (NSUInteger)RMTileHash(tile);
-}
-
+#pragma mark -
+#pragma mark Caching
 -(void) touch
 {
 	[lastUsedTime release];
 	lastUsedTime = [[NSDate date] retain];
 }
 
-- (BOOL)isEqual:(id)anObject
+#pragma mark -
+#pragma mark Changing the screen location and zoom
+- (void)moveBy: (CGSize) delta
 {
-	if (![anObject isKindOfClass:[RMTileImage class]])
-		return NO;
-
-	return RMTilesEqual(tile, [(RMTileImage*)anObject tile]);
+	self.screenLocation = RMTranslateCGRectBy(screenLocation, delta);
 }
 
+- (void)zoomByFactor: (float) zoomFactor near:(CGPoint) center
+{
+	self.screenLocation = RMScaleCGRectAboutPoint(screenLocation, zoomFactor, center);
+}
+
+- (CGRect) screenLocation
+{
+	return screenLocation;
+}
+
+- (void) setScreenLocation: (CGRect)newScreenLocation
+{
+    //	RMLog(@"location moving from %f %f to %f %f", screenLocation.origin.x, screenLocation.origin.y, newScreenLocation.origin.x, newScreenLocation.origin.y);
+	screenLocation = newScreenLocation;
+	
+	if (layer != nil)
+	{
+		// layer.frame = screenLocation;
+		layer.position = screenLocation.origin;
+		layer.bounds = CGRectMake(0, 0, screenLocation.size.width, screenLocation.size.height);
+	}
+	
+	[self touch];
+}
+
+#pragma mark -
+#pragma mark Rendering
 - (void)makeLayer
 {
 	if (layer == nil)
@@ -196,39 +244,9 @@
 	}
 }
 
-- (void)moveBy: (CGSize) delta
-{
-	self.screenLocation = RMTranslateCGRectBy(screenLocation, delta);
-}
-
-- (void)zoomByFactor: (float) zoomFactor near:(CGPoint) center
-{
-	self.screenLocation = RMScaleCGRectAboutPoint(screenLocation, zoomFactor, center);
-}
-
-- (CGRect) screenLocation
-{
-	return screenLocation;
-}
-
-- (void) setScreenLocation: (CGRect)newScreenLocation
-{
-//	RMLog(@"location moving from %f %f to %f %f", screenLocation.origin.x, screenLocation.origin.y, newScreenLocation.origin.x, newScreenLocation.origin.y);
-	screenLocation = newScreenLocation;
-	
-	if (layer != nil)
-	{
-		// layer.frame = screenLocation;
-		layer.position = screenLocation.origin;
-		layer.bounds = CGRectMake(0, 0, screenLocation.size.width, screenLocation.size.height);
-	}
-	
-	[self touch];
-}
-
 - (void) displayProxy:(UIImage*) img
 {
-        layer.contents = (id)[img CGImage]; 
+    layer.contents = (id)[img CGImage]; 
 }
 
 @end

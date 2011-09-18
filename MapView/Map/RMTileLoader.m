@@ -85,12 +85,12 @@
 			  targetZoom, content.minZoom, content.maxZoom);
 	if (contained == NO)
 	{
-		//		RMLog(@"reassembling because its not contained");
+		// RMLog(@"reassembling because its not contained");
 	}
 	
 	if (targetZoom != loadedZoom)
 	{
-		//		RMLog(@"reassembling because target zoom = %f, loaded zoom = %d", targetZoom, loadedZoom);
+		// RMLog(@"reassembling because target zoom = %f, loaded zoom = %d", targetZoom, loadedZoom);
 	}
 	
 	return contained && targetZoom == loadedZoom;
@@ -145,39 +145,7 @@
 	
 	[content tilesUpdatedRegion:newLoadedBounds];
 	
-} 
-
-/*
- -(void) updateLoadedImages
- {
- if (suppressLoading)
- return;
- 
- if ([content mercatorToTileProjection] == nil || [content mercatorToScreenProjection] == nil)
- return;
- 
- if ([self screenIsLoaded])
- return;
- 
- RMLog(@"assemble count = %d", [[content imagesOnScreen] count]);
- 
- RMTileRect newTileRect = [content tileBounds];
- 
- RMTileImageSet *images = [content imagesOnScreen];
- CGRect newLoadedBounds = [images addTiles:newTileRect ToDisplayIn:[content screenBounds]];
- RMLog(@"-> mid count = %d", [images count]);
- 
- if (!RMTileIsDummy(loadedTiles.origin.tile))
- [images removeTiles:loadedTiles];
- 
- RMLog(@"-> count = %d", [images count]);
- 
- loadedBounds = newLoadedBounds;
- loadedZoom = newTileRect.origin.tile.zoom;
- loadedTiles = newTileRect;
- 
- [content tilesUpdatedRegion:newLoadedBounds];
- }*/
+}
 
 - (void)moveBy: (CGSize) delta
 {
@@ -216,10 +184,5 @@
 	[self clearLoadedBounds];
 	[self updateLoadedImages];
 }
-
-//-(BOOL) containsRect: (CGRect)bounds
-//{
-//	return CGRectContainsRect(loadedBounds, bounds);
-//}
 
 @end

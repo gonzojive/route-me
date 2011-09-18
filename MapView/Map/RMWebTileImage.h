@@ -42,7 +42,6 @@ enum {
 extern NSString *RMWebTileImageNotificationErrorKey;
 
 
-
 /// RMTileImage subclass: a tile image loaded from a URL.
 @interface RMWebTileImage : RMTileImage {
     NSUInteger retries;
@@ -54,8 +53,15 @@ extern NSString *RMWebTileImageNotificationErrorKey;
 	NSMutableData *data;
 }
 
+/*!
+ */
 - (id) initWithTile: (RMTile)tile FromURL:(NSString*)url;
+
+/*!
+ */
 - (void) requestTile;
+/*!
+ */
 - (void) startLoading:(NSTimer *)timer;
 
 @end

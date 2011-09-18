@@ -51,41 +51,53 @@
 	NSMutableSet *images;
 	short zoom, tileDepth;
 }
+/// The delegate object that is informed when tiles are added and removed.
+@property (assign, nonatomic, readwrite) id delegate;
 
+/// tileDepth defaults to zero. If tiles have no alpha, set this higher, 3 or so, to make zooming smoother.
+@property (assign, readwrite) short tileDepth;
+
+/// The zoom level of the current region.
+@property (assign, readwrite) short zoom;
+
+/// Returns true if every image in the set has loaded.
+@property (readonly) BOOL fullyLoaded;
+
+/// Initializes the object.
 -(id) initWithDelegate: (id) _delegate;
 
+/// Add a tile from an already loaded image.
 -(void) addTile: (RMTile) tile WithImage: (RMTileImage *)image At: (CGRect) screenLocation;
+/// Addd a tile a particular screen location without specifying an image.
 -(void) addTile: (RMTile) tile At: (CGRect) screenLocation;
 /// Add tiles inside rect protected to bounds. Return rectangle containing bounds extended to full tile loading area
 -(CGRect) addTiles: (RMTileRect)rect ToDisplayIn:(CGRect)bounds;
 
 -(RMTileImage*) imageWithTile: (RMTile) tile;
-	
+
+/// Removes the tile image at the given point in tile space.
 -(void) removeTile: (RMTile) tile;
-
+/// Removes all tile images.
 -(void) removeAllTiles;
+/// Removes any tile that is determined to be lower quality (too stretched out usually) than a provided image.
+-(void) removeTilesWorseThan: (RMTileImage *)newImage;
+/// Removes tiles that are outside of some geographical boundary in tile space.
+-(void) removeTilesOutsideOf: (RMTileRect)rect;
 
+/// Changes the source of the tile set and clears any loaded tile images.
 - (void) setTileSource: (id<RMTileSource>)newTileSource;
 
+/// The number of images in the image set.
 -(NSUInteger) count;
 
 - (void)moveBy: (CGSize) delta;
 - (void)zoomByFactor: (float) zoomFactor near:(CGPoint) center;
 
-//- (void) drawRect:(CGRect) rect;
-
-- (void) printDebuggingInformation;
-
 - (void)cancelLoading;
 
 -(void) tileImageLoaded:(NSNotification *)notification;
--(void) removeTilesWorseThan: (RMTileImage *)newImage;
 -(BOOL) isTile: (RMTile)subject worseThanTile: (RMTile)object;
 -(RMTileImage *) anyTileImage;
--(void) removeTilesOutsideOf: (RMTileRect)rect;
 
-@property (assign, nonatomic, readwrite) id delegate;
-// tileDepth defaults to zero. if tiles have no alpha, set this higher, 3 or so, to make zooming smoother
-@property (assign, readwrite) short zoom, tileDepth;
-@property (readonly) BOOL fullyLoaded;
+- (void) printDebuggingInformation;
 @end

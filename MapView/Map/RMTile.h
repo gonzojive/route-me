@@ -36,6 +36,9 @@
 /*! \struct RMTile
  \brief Uniquely specifies coordinates and zoom level for a particular tile in some tile source.
  
+ A tile for a particular tile source can be identified by a zoom level, x, and y position.
+ This structure captures those key pieces of information that can be used ot find a tile.
+ 
  This is a 3-field number. If you want the image associated with an RMTile, you're looking for RMTileImage
  */
 typedef struct{
@@ -44,7 +47,10 @@ typedef struct{
 } RMTile;
 
 /*! \struct RMTilePoint
- \brief Don't know what this is for.
+ \brief Specifies the rendering position and the coordinate of a tile in (x, y, zoom).
+ 
+ A tile for a particular tile source can be identified by a zoom level, x, and y position.
+ This structures contains both this information about a tile, and its rendering offset.
  */
 typedef struct{
 	RMTile tile;
@@ -52,16 +58,22 @@ typedef struct{
 } RMTilePoint;
 
 /*! \struct RMTileRect
- \brief Don't know what this is for.
- */
+ \brief Specifies the rendering offset, rendering size, and tile index.
+
+ A tile for a particular tile source can be identified by a zoom level, x, and y position.
+ This structures contains both this information about a tile, and its rendering rectangle.
+*/
 typedef struct{
 	RMTilePoint origin;
 	CGSize size;
 } RMTileRect;
 
+/// Returns true if two tiles refer to the same x, y, and zoom level.
 char RMTilesEqual(RMTile one, RMTile two);
 
+/// Returns true if this tile is the special, invalid, dummy tile.
 char RMTileIsDummy(RMTile tile);
+/// Returns a special, invalid, dummy tile.
 RMTile RMTileDummy();
 
 /// Return a hash of the tile, used to override the NSObject hash method for RMTile.

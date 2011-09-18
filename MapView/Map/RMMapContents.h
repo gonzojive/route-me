@@ -87,31 +87,42 @@ enum {
 	CALayer *layer;
 	
 	RMMarkerManager *markerManager;
-	/// subview for the image displayed while tiles are loading. Set its contents by providing your own "loading.png".
+
+	/// The background subview displays while tiles are loading. Set its contents by providing your own "loading.png".
 	RMMapLayer *background;
-	/// subview for markers and paths
+
+	/// The overlay subview displays markers and paths.
 	RMLayerCollection *overlay;
 	
-	/// The projection object to convert between latitude/longitude and RMProjectedPoint and friends.
+	/// The projection object converts between latitude/longitude and RMProjectedPoint and friends.
 	RMProjection *projection;
 	
 	id<RMMercatorToTileProjection> mercatorToTileProjection;
 	
-	/// (guess) converts from projected meters to screen pixel coordinates
+	/// This projection object converts between projected meters and screen pixel coordinates.
 	RMMercatorToScreenProjection *mercatorToScreenProjection;
 	
-	/// controls what images are used. Can be changed while the view is visible, but see http://code.google.com/p/route-me/issues/detail?id=12
+	/// The tile source controls what images are used.
+    /// It can be changed while the view is visible, but see http://code.google.com/p/route-me/issues/detail?id=12
 	id<RMTileSource> tileSource;
 	
 	RMTileImageSet *imagesOnScreen;
 	RMTileLoader *tileLoader;
 	
 	RMMapRenderer *renderer;
-	NSUInteger		boundingMask;
+	NSUInteger boundingMask;
 	
-	/// minimum zoom number allowed for the view. #minZoom and #maxZoom must be within the limits of #tileSource but can be stricter; they are clamped to tilesource limits if needed.
+	/*! The minimum zoom number allowed for the view prevents the map from zooming in too closely.
+    
+        #minZoom and #maxZoom must be within the limits of #tileSource but can be stricter.  They 
+        are clamped to tilesource limits if needed.
+     */
 	float minZoom;
-	/// maximum zoom number allowed for the view. #minZoom and #maxZoom must be within the limits of #tileSource but can be stricter; they are clamped to tilesource limits if needed.
+	/*! The maximum zoom number allowed for the view prevents the map from zooming out too far.
+     
+     #minZoom and #maxZoom must be within the limits of #tileSource but can be stricter.  They 
+     are clamped to tilesource limits if needed.
+     */
 	float maxZoom;
 
     float screenScale;
@@ -119,33 +130,59 @@ enum {
 	id<RMTilesUpdateDelegate> tilesUpdateDelegate;
 }
 
+/// The center coordinate of the displayed region of the map.
 @property (readwrite) CLLocationCoordinate2D mapCenter;
+/// The center of the displayed region of the map in projected space.
 @property (readwrite) RMProjectedPoint centerProjectedPoint;
+/// The bounds of the displayed portion of the map in projected space.
 @property (readwrite) RMProjectedRect projectedBounds;
+/// ???
 @property (readonly)  RMTileRect tileBounds;
+/// The screen coordinates of the displayed region of the map.
 @property (readonly)  CGRect screenBounds;
+/// The approximate number of meters displayed for every pixel.
 @property (readwrite) float metersPerPixel;
+/// ???
 @property (readonly)  float scaledMetersPerPixel;
-/// zoom level is clamped to range (minZoom, maxZoom)
+/// The current zoom level.  Note that the zoom level is clamped to [minZoom, maxZoom].
 @property (readwrite) float zoom;
 
-@property (nonatomic, readwrite) float minZoom, maxZoom;
+/*! The minimum zoom number allowed for the view prevents the map from zooming in too closely.
+ 
+ #minZoom and #maxZoom must be within the limits of #tileSource but can be stricter.  They 
+ are clamped to tilesource limits if needed.
+ */
+@property (nonatomic, readwrite) float minZoom;
+/*! The maximum zoom number allowed for the view prevents the map from zooming out too far.
+ 
+ #minZoom and #maxZoom must be within the limits of #tileSource but can be stricter.  They 
+ are clamped to tilesource limits if needed.
+ */
+@property (nonatomic, readwrite) float maxZoom;
 
 @property (nonatomic, assign) float screenScale;
 
 @property (readonly)  RMTileImageSet *imagesOnScreen;
 @property (readonly)  RMTileLoader *tileLoader;
 
+
+/// The projection object converts between latitude/longitude and RMProjectedPoint and friends.
 @property (readonly)  RMProjection *projection;
+/// The projection used to map from RMProjectedPoint space to the tile space.
 @property (readonly)  id<RMMercatorToTileProjection> mercatorToTileProjection;
+/// This projection object converts between projected meters and screen pixel coordinates.
 @property (readonly)  RMMercatorToScreenProjection *mercatorToScreenProjection;
 
+/// The source of map tiles.  By default this is set to an instance of RMOpenStreetMapSource.
 @property (retain, readwrite) id<RMTileSource> tileSource;
+/// The object responsible for rendering map tiles (should probably be private).
 @property (retain, readwrite) RMMapRenderer *renderer;
 
 @property (readonly)  CALayer *layer;
 
+/// The background subview displays while tiles are loading. Set its contents by providing your own "loading.png".
 @property (retain, readwrite) RMMapLayer *background;
+/// The overlay subview displays markers and paths.
 @property (retain, readwrite) RMLayerCollection *overlay;
 @property (retain, readonly)  RMMarkerManager *markerManager;
 /// \bug probably shouldn't be retaining this delegate
@@ -186,7 +223,9 @@ enum {
 /// \deprecate Use setCenterProjectedPoint: instead.
 - (void)moveToProjectedPoint: (RMProjectedPoint)aPoint;
 
+/// Move the map in screen coordinates.
 - (void)moveBy: (CGSize) delta;
+/// Zooms the map in or out by a particular factor. ??? What specificially
 - (void)zoomByFactor: (float) zoomFactor near:(CGPoint) center;
 - (void)zoomInToNextNativeZoomAt:(CGPoint) pivot animated:(BOOL) animated;
 - (void)zoomOutToNextNativeZoomAt:(CGPoint) pivot animated:(BOOL) animated; 
@@ -200,25 +239,30 @@ enum {
 - (float)nextNativeZoomFactor;
 - (float)prevNativeZoomFactor;
 
+/// Zoom in on the region with opposite corners located on the provided GPS coordinates.
+- (void)zoomWithLatLngBoundsNorthEast:(CLLocationCoordinate2D)ne SouthWest:(CLLocationCoordinate2D)se;
+/// Sets the projected bounds of the displayed portion of the map, and updates the display.
+- (void)zoomWithRMMercatorRectBounds:(RMProjectedRect)bounds;
+
+/// Renders at least some portion the map.
 - (void) drawRect: (CGRect) rect;
 
-//-(void)addLayer: (id<RMMapLayer>) layer above: (id<RMMapLayer>) other;
-//-(void)addLayer: (id<RMMapLayer>) layer below: (id<RMMapLayer>) other;
-//-(void)removeLayer: (id<RMMapLayer>) layer;
-
 // During touch and move operations on the iphone its good practice to
-// hold off on any particularly expensive operations so the user's 
+// hold off on any particularly expensive operations so the user's exerience
+// is not interrupted.
 + (BOOL) performExpensiveOperations;
 + (void) setPerformExpensiveOperations: (BOOL)p;
 
+/// Returns the screen coordinate of the given latitude/longitude.
 - (CGPoint)latLongToPixel:(CLLocationCoordinate2D)latlong;
 - (CGPoint)latLongToPixel:(CLLocationCoordinate2D)latlong withMetersPerPixel:(float)aScale;
+
+/// Returns an object that encodes both the location in tile space of the tile, and its offset in screen coordinates.
 - (RMTilePoint)latLongToTilePoint:(CLLocationCoordinate2D)latlong withMetersPerPixel:(float)aScale;
+
+/// Converts a pixel location to a longitude/latitude.
 - (CLLocationCoordinate2D)pixelToLatLong:(CGPoint)aPixel;
 - (CLLocationCoordinate2D)pixelToLatLong:(CGPoint)aPixel withMetersPerPixel:(float)aScale;
-
-- (void)zoomWithLatLngBoundsNorthEast:(CLLocationCoordinate2D)ne SouthWest:(CLLocationCoordinate2D)se;
-- (void)zoomWithRMMercatorRectBounds:(RMProjectedRect)bounds;
 
 /// returns the smallest bounding box containing the entire screen
 - (RMSphericalTrapezium) latitudeLongitudeBoundingBoxForScreen;

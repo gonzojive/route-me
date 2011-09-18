@@ -38,6 +38,8 @@ NSString *RMWebTileImageNotificationErrorKey = @"RMWebTileImageNotificationError
 
 @implementation RMWebTileImage
 
+#pragma mark -
+#pragma mark Initialization and deallocation
 - (id) initWithTile: (RMTile)_tile FromURL:(NSString*)urlStr
 {
 	if (![super initWithTile:_tile])
@@ -71,10 +73,11 @@ NSString *RMWebTileImageNotificationErrorKey = @"RMWebTileImageNotificationError
 	[super dealloc];
 }
 
+#pragma mark -
+#pragma mark Requesting a tile from the web
 - (void) requestTile
 {
-	//RMLog(@"fetching: %@", url);
-	if(connection) // re-request
+	if(connection) // Re-request the image.
 	{
 		//RMLog(@"Refetching: %@: %d", url, retries);
 		
@@ -130,6 +133,7 @@ NSString *RMWebTileImageNotificationErrorKey = @"RMWebTileImageNotificationError
 	[super cancelLoading];
 }
 
+#pragma mark -
 #pragma mark URL loading functions
 // Delegate methods for loading the image
 
@@ -137,12 +141,7 @@ NSString *RMWebTileImageNotificationErrorKey = @"RMWebTileImageNotificationError
 //– connection:didReceiveAuthenticationChallenge:  delegate method  
 //Connection Data and Responses
 //– connection:willCacheResponse:  delegate method  
-//– connection:didReceiveResponse:  delegate method  
-//– connection:didReceiveData:  delegate method  
 //– connection:willSendRequest:redirectResponse:  delegate method  
-//Connection Completion
-//– connection:didFailWithError:  delegate method
-//– connectionDidFinishLoading:  delegate method 
 
 - (void)connection:(NSURLConnection *)_connection didReceiveResponse:(NSURLResponse *)response
 {
