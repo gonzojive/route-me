@@ -60,7 +60,7 @@
 	content = _contents;
 	
 	[self clearLoadedBounds];
-	loadedTiles.origin.tile = RMTileDummy();
+	loadedTileRect.origin.tile = RMTileDummy();
 	
 	suppressLoading = NO;
 	
@@ -82,7 +82,7 @@
 
 - (void)reset
 {
-	loadedTiles.origin.tile = RMTileDummy();
+	loadedTileRect.origin.tile = RMTileDummy();
 }
 
 - (void)reload
@@ -159,7 +159,7 @@
     // TODO: explain-- for some reason, we also check to make sure loadedTiles.origin.tile is not a dummy tile
     // loadedTiles.origin.tile is set to a dummy when the loader is reset.  So resetting the loader
     // prevents tiles from being removed.
-	if (!RMTileIsDummy(loadedTiles.origin.tile))
+	if (!RMTileIsDummy(loadedTileRect.origin.tile))
 	{
 		[images removeTilesOutsideOf:newTileRect];
 	}
@@ -167,7 +167,7 @@
     // Finally, update the state of this object to reflect the changes in bounds and tiles.
 	loadedBounds = newLoadedBounds;
 	loadedZoom = newTileRect.origin.tile.zoom;
-	loadedTiles = newTileRect;
+	loadedTileRect = newTileRect;
 	
 	[content tilesUpdatedRegion:newLoadedBounds];
 }

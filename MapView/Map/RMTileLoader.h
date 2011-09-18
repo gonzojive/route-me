@@ -48,7 +48,7 @@
 
 	CGRect loadedBounds;
 	NSUInteger loadedZoom;
-	RMTileRect loadedTiles;
+	RMTileRect loadedTileRect;
 	
 	BOOL suppressLoading;
 }
