@@ -38,8 +38,12 @@
 
 @implementation RMTileLoader
 
+#pragma mark -
+#pragma mark Simple properties
 @synthesize loadedBounds, loadedZoom;
 
+#pragma mark -
+#pragma mark Initialization and deallocation
 -(id) init
 {
 	if (![self initWithContent: nil])
@@ -69,11 +73,26 @@
 	[super dealloc];
 }
 
+#pragma mark -
+#pragma mark Resetting the loaded tiles and bounds
 -(void) clearLoadedBounds
 {
 	loadedBounds = CGRectZero;
 }
 
+- (void)reset
+{
+	loadedTiles.origin.tile = RMTileDummy();
+}
+
+- (void)reload
+{
+	[self clearLoadedBounds];
+	[self updateLoadedImages];
+}
+
+#pragma mark -
+#pragma mark Loading
 -(BOOL) screenIsLoaded
 {
 	//	RMTileRect targetRect = [content tileBounds];
@@ -97,17 +116,16 @@
 }
 
 
--(void) updateLoadedImages
+- (BOOL) shouldLoadImages
 {
-	if (suppressLoading)
-		return;
+  if (suppressLoading)
+		return NO;
 	
 	if ([content mercatorToTileProjection] == nil || [content  
 													  mercatorToScreenProjection] == nil)
-		return;
+		return NO;
 	
-	// delay display of new images until expensive operations are  
-	//allowed
+	// Delay display of new images until expensive operations are allowed.
 	[[NSNotificationCenter defaultCenter] removeObserver:self  
 													name:RMResumeExpensiveOperations object:nil];
 	if ([RMMapContents performExpensiveOperations] == NO)
@@ -115,43 +133,50 @@
         [[NSNotificationCenter defaultCenter] addObserver:self  
 												 selector:@selector(updateLoadedImages)  
 													 name:RMResumeExpensiveOperations object:nil];
-        return;
+        return NO;
 	}
 	
 	if ([self screenIsLoaded])
-		return;
+		return NO;
+
+
+}
+-(void) updateLoadedImages
+{
+	if (![self shouldLoadImages])
+        return;
 	
-	//RMLog(@"updateLoadedImages initial count = %d", [[content imagesOnScreen] count]);
+    // Create a tile rectangle for the current region and zoom level of the map.
+    RMTileRect newTileRect = [content tileBounds];
 	
-	RMTileRect newTileRect = [content tileBounds];
-	
+    // Ge the list of images that are already on the screen, and add new ones to canvas
+    // the newTileRect with tile images.
 	RMTileImageSet *images = [content imagesOnScreen];
 	images.zoom = newTileRect.origin.tile.zoom;
-	CGRect newLoadedBounds = [images addTiles:newTileRect ToDisplayIn:
-							  [content screenBounds]];
-	//RMLog(@"updateLoadedImages added count = %d", [images count]);
+	CGRect newLoadedBounds = [images addTiles:newTileRect ToDisplayIn: [content screenBounds]];
 	
-	
+    // Get rid of images that are outside of the newTileRect.
+    // TODO: explain-- for some reason, we also check to make sure loadedTiles.origin.tile is not a dummy tile
+    // loadedTiles.origin.tile is set to a dummy when the loader is reset.  So resetting the loader
+    // prevents tiles from being removed.
 	if (!RMTileIsDummy(loadedTiles.origin.tile))
 	{
 		[images removeTilesOutsideOf:newTileRect];
 	}
 	
-	//RMLog(@"updateLoadedImages final count = %d", [images count]);
-	
+    // Finally, update the state of this object to reflect the changes in bounds and tiles.
 	loadedBounds = newLoadedBounds;
 	loadedZoom = newTileRect.origin.tile.zoom;
 	loadedTiles = newTileRect;
 	
 	[content tilesUpdatedRegion:newLoadedBounds];
-	
 }
 
+#pragma mark -
+#pragma mark Manipulating the bounds and zoom
 - (void)moveBy: (CGSize) delta
 {
-	//	RMLog(@"loadedBounds %f %f %f %f -> ", loadedBounds.origin.x, loadedBounds.origin.y, loadedBounds.size.width, loadedBounds.size.height);
 	loadedBounds = RMTranslateCGRectBy(loadedBounds, delta);
-	//	RMLog(@" -> %f %f %f %f", loadedBounds.origin.x, loadedBounds.origin.y, loadedBounds.size.width, loadedBounds.size.height);
 	[self updateLoadedImages];
 }
 
@@ -161,6 +186,8 @@
 	[self updateLoadedImages];
 }
 
+#pragma mark -
+#pragma mark Toggling the suppression of loading tiles
 - (BOOL) suppressLoading
 {
 	return suppressLoading;
@@ -172,17 +199,6 @@
 	
 	if (suppress == NO)
 		[self updateLoadedImages];
-}
-
-- (void)reset
-{
-	loadedTiles.origin.tile = RMTileDummy();
-}
-
-- (void)reload
-{
-	[self clearLoadedBounds];
-	[self updateLoadedImages];
 }
 
 @end

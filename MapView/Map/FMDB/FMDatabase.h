@@ -84,9 +84,7 @@
 - (NSMutableDictionary *)cachedStatements;
 - (void)setCachedStatements:(NSMutableDictionary *)value;
 
-
 + (NSString*) sqliteLibVersion;
-
 
 - (int)changes;
 

@@ -136,7 +136,7 @@ enum {
 @property (readwrite) RMProjectedPoint centerProjectedPoint;
 /// The bounds of the displayed portion of the map in projected space.
 @property (readwrite) RMProjectedRect projectedBounds;
-/// ???
+/// An object the captures the area over which tiles should be loaded in the view, which is a rectanglar region at a particular zoom level.
 @property (readonly)  RMTileRect tileBounds;
 /// The screen coordinates of the displayed region of the map.
 @property (readonly)  CGRect screenBounds;

@@ -70,7 +70,12 @@
 -(void) addTile: (RMTile) tile WithImage: (RMTileImage *)image At: (CGRect) screenLocation;
 /// Addd a tile a particular screen location without specifying an image.
 -(void) addTile: (RMTile) tile At: (CGRect) screenLocation;
-/// Add tiles inside rect protected to bounds. Return rectangle containing bounds extended to full tile loading area
+/*! Add tile images to canvas the entire tile rect passed.
+ 
+ Return screen rectangle containing bounds extended to full tile loading area.  This rectangle
+ will fit tightly around the map tiles that were added, because the tiles that are added will
+ form a rectangle and not some jagged shape.
+ */
 -(CGRect) addTiles: (RMTileRect)rect ToDisplayIn:(CGRect)bounds;
 
 -(RMTileImage*) imageWithTile: (RMTile) tile;
