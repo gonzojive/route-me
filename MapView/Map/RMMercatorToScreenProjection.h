@@ -32,7 +32,13 @@
 
 @class RMProjection;
 
-/// This is a stateful projection. As the screen moves around, so too do projections change.
+/*! Projects back and forth between RMProjectedPoint space to screen space.
+ 
+ This is a stateful projection.  As the region of the map displayed on the screen
+ changes, so too do the instance variables of this object.
+ 
+ For converting from latitude/longitude to RMProjectedPoint space, see #RMProjection.
+ */
 @interface RMMercatorToScreenProjection : NSObject
 {
 	/// What the screen is currently looking at.

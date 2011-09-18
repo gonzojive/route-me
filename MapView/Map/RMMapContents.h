@@ -92,12 +92,10 @@ enum {
 	/// subview for markers and paths
 	RMLayerCollection *overlay;
 	
-	/// (guess) the projection object to convert from latitude/longitude to meters.
-	/// Latlong is calculated dynamically from mercatorBounds.
+	/// The projection object to convert between latitude/longitude and RMProjectedPoint and friends.
 	RMProjection *projection;
 	
 	id<RMMercatorToTileProjection> mercatorToTileProjection;
-//	RMTileRect tileBounds;
 	
 	/// (guess) converts from projected meters to screen pixel coordinates
 	RMMercatorToScreenProjection *mercatorToScreenProjection;

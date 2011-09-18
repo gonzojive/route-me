@@ -60,19 +60,22 @@
 
 @implementation RMMapContents
 
+#pragma mark -
+#pragma mark Synthesized properties
 @synthesize boundingMask;
 @synthesize minZoom;
 @synthesize maxZoom;
 @synthesize screenScale;
 @synthesize markerManager;
 
-#pragma mark --- begin constants ----
+#pragma mark -
+#pragma mark Constants
 #define kZoomAnimationStepTime 0.03f
 #define kZoomAnimationAnimationTime 0.1f
 #define kiPhoneMilimeteresPerPixel .1543
 #define kZoomRectPixelBuffer 50
-#pragma mark --- end constants ----
 
+#pragma mark -
 #pragma mark Initialisation
 
 - (id)initWithView: (UIView*) view
@@ -217,7 +220,6 @@
 	NSAssert1([view isKindOfClass:[RMMapView class]], @"view %@ must be a subclass of RMMapView", view);
 	
 	self.boundingMask = RMMapMinWidthBound;
-//	targetView = view;
 	mercatorToScreenProjection = [[RMMercatorToScreenProjection alloc] initFromProjection:[_tileSource projection] ToScreenBounds:[view bounds]];
 
 	tileSource = nil;
@@ -312,8 +314,8 @@
 	[tileSource didReceiveMemoryWarning];
 }
 
-
-#pragma mark Forwarded Events
+#pragma mark -
+#pragma mark Moving
 
 - (void)moveToLatLong: (CLLocationCoordinate2D)latlong
 {
@@ -335,6 +337,8 @@
 	[renderer setNeedsDisplay];
 }
 
+#pragma mark -
+#pragma mark Zooming
 /// \bug doesn't really adjust anything, just makes a computation. CLANG flags some dead assignments (write-only variables)
 - (float)adjustZoomForBoundingMask:(float)zoomFactor
 {
@@ -612,6 +616,7 @@
 }
 
 
+#pragma mark -
 #pragma mark Properties
 
 - (void) setTileSource: (id<RMTileSource>)newTileSource
@@ -659,8 +664,6 @@
 	if (renderer == nil)
 		return;
 	
-	//	CGRect rect = [self screenBounds];
-	//	RMLog(@"%f %f %f %f", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
 	[[renderer layer] setFrame:[self screenBounds]];
 	
 	if (background != nil)
@@ -777,6 +780,12 @@
 -(void) setProjectedBounds: (RMProjectedRect) boundsRect
 {
 	[mercatorToScreenProjection setProjectedBounds:boundsRect];
+	/*
+     [overlay correctPositionOfAllSublayers];
+	[tileLoader reload];
+	[renderer setNeedsDisplay];
+	[overlay setNeedsDisplay];
+     */
 }
 
 -(RMTileRect) tileBounds
@@ -800,15 +809,15 @@
 
 -(void) setMetersPerPixel: (float) newMPP
 {
-        float zoomFactor = self.metersPerPixel / newMPP;
-        CGPoint pivot = CGPointZero;
-
-        [mercatorToScreenProjection setMetersPerPixel:newMPP];
-        [imagesOnScreen zoomByFactor:zoomFactor near:pivot];
-        [tileLoader zoomByFactor:zoomFactor near:pivot];
-        [overlay zoomByFactor:zoomFactor near:pivot];
-        [overlay correctPositionOfAllSublayers];
-        [renderer setNeedsDisplay];
+    float zoomFactor = self.metersPerPixel / newMPP;
+    CGPoint pivot = CGPointZero;
+    
+    [mercatorToScreenProjection setMetersPerPixel:newMPP];
+    [imagesOnScreen zoomByFactor:zoomFactor near:pivot];
+    [tileLoader zoomByFactor:zoomFactor near:pivot];
+    [overlay zoomByFactor:zoomFactor near:pivot];
+    [overlay correctPositionOfAllSublayers];
+    [renderer setNeedsDisplay];
 }
 
 -(float) scaledMetersPerPixel
@@ -890,6 +899,7 @@ static BOOL _performExpensiveOperations = YES;
 		[[NSNotificationCenter defaultCenter] postNotificationName:RMSuspendExpensiveOperations object:self];
 }
 
+#pragma mark -
 #pragma mark LatLng/Pixel translation functions
 
 - (CGPoint)latLongToPixel:(CLLocationCoordinate2D)latlong
@@ -917,13 +927,15 @@ static BOOL _performExpensiveOperations = YES;
 	return [projection pointToLatLong:[mercatorToScreenProjection projectScreenPointToXY:aPixel withMetersPerPixel:aScale]];
 }
 
-- (double)scaleDenominator {
+- (double)scaleDenominator
+{
 	double routemeMetersPerPixel = [self metersPerPixel];
 	double iphoneMillimetersPerPixel = kiPhoneMilimeteresPerPixel;
 	double truescaleDenominator =  routemeMetersPerPixel / (0.001 * iphoneMillimetersPerPixel) ;
 	return truescaleDenominator;
 }
 
+#pragma mark -
 #pragma mark Zoom With Bounds
 - (void)zoomWithLatLngBoundsNorthEast:(CLLocationCoordinate2D)ne SouthWest:(CLLocationCoordinate2D)sw
 {
@@ -994,7 +1006,7 @@ static BOOL _performExpensiveOperations = YES;
 	[renderer setNeedsDisplay];
 }
 
-
+#pragma mark -
 #pragma mark Markers and overlays
 
 // Move overlays stuff here - at the moment overlay stuff is above...

@@ -37,10 +37,14 @@ NS_INLINE RMLatLong RMPixelPointAsLatLong(RMProjectedPoint xypoint) {
 
 @implementation RMProjection
 
+#pragma mark -
+#pragma mark Simple Properties
 @synthesize internalProjection;
 @synthesize planetBounds;
 @synthesize projectionWrapsHorizontally;
 
+#pragma mark -
+#pragma mark Initialization and dealocation
 - (id) initWithString: (NSString*)params InBounds: (RMProjectedRect) projBounds
 {
 	if (![super init])
@@ -81,6 +85,8 @@ NS_INLINE RMLatLong RMPixelPointAsLatLong(RMProjectedPoint xypoint) {
 	[super dealloc];
 }
 
+#pragma mark -
+#pragma mark Normalizing points
 - (RMProjectedPoint) wrapPointHorizontally: (RMProjectedPoint) aPoint
 {
 	if (!projectionWrapsHorizontally
@@ -110,6 +116,8 @@ NS_INLINE RMLatLong RMPixelPointAsLatLong(RMProjectedPoint xypoint) {
 	return aPoint;
 }
 
+#pragma mark -
+#pragma mark Conversion: RMLatLong <-> RMProjectedPoint
 - (RMProjectedPoint)latLongToPoint:(RMLatLong)aLatLong
 {
 	projUV uv = {
@@ -148,6 +156,8 @@ static RMProjection* _google = nil;
 static RMProjection* _latlong = nil;
 static RMProjection* _osgb = nil;
 
+#pragma mark -
+#pragma mark Standard projection objects
 + (RMProjection*)googleProjection
 {
 	if (_google)

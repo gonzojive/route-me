@@ -31,17 +31,22 @@
 #import "RMFoundation.h"
 #import "RMLatLong.h"
 
-/// Objective-C wrapper for PROJ4 map projection definitions.
+/*! Projects between latitude/longitude space and projected coordinate space.
+ 
+ Use this object convert from latitude/longitude to RMProjectedPoint and RMPRojectedRect.
+ 
+ This is mostly an Objective-C wrapper for PROJ4 map projection definitions.
+ */
 @interface RMProjection : NSObject
 {
 	/// This is actually a PROJ4 projPJ, but it is typed as void* so the proj_api doesn't have to be included
-	void*		internalProjection;
+	void* internalProjection;
 	
 	/// the size of the earth, in projected units (meters, most often)
 	RMProjectedRect	planetBounds;
 	
 	/// hardcoded to YES in #initWithString:InBounds:
-	BOOL		projectionWrapsHorizontally;
+	BOOL projectionWrapsHorizontally;
 }
 
 @property (readonly) void* internalProjection;

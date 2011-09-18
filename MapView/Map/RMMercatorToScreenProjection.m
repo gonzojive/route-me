@@ -196,33 +196,6 @@
 	return aPixelPoint;
 }
 
-/*
- - (CGPoint) projectXYPoint:(RMProjectedPoint)aPoint withMetersPerPixel:(float)aScale
- {
- CGPoint	aPixelPoint;
- CGFloat originX = origin.easting;
- CGFloat boundsWidth = [projection planetBounds].size.width;
- CGFloat pointX = aPoint.easting - boundsWidth/2;
- CGFloat left = sqrt((pointX - (originX - boundsWidth))*(pointX - (originX - boundsWidth)));
- CGFloat middle = sqrt((pointX - originX)*(pointX - originX));
- CGFloat right = sqrt((pointX - (originX + boundsWidth))*(pointX - (originX + boundsWidth)));
- 
- //RMLog(@"left:%f middle:%f right:%f x:%f width:%f", left, middle, right, pointX, boundsWidth);//LK
- 
- if(middle <= left && middle <= right){
- aPixelPoint.x = (aPoint.easting - originX) / aScale;
- } else if(left <= middle && left <= right){
- //RMLog(@"warning: projectXYPoint middle..");//LK
- aPixelPoint.x = (aPoint.easting - (originX)) / aScale;
- } else{ //right
- aPixelPoint.x = (aPoint.easting - (originX+boundsWidth)) / aScale;
- }
- 
- aPixelPoint.y = screenBounds.size.height - (aPoint.northing - origin.northing) / aScale;
- return aPixelPoint;
- }
- */
-
 - (CGPoint) projectXYPoint: (RMProjectedPoint)aPoint
 {
 
@@ -286,10 +259,12 @@
 {
 	float scaleX = aRect.size.width / screenBounds.size.width;
 	float scaleY = aRect.size.height / screenBounds.size.height;
-	
+    
 	// I will pick a scale in between those two.
 	metersPerPixel = (scaleX + scaleY) / 2;
 	origin = [projection wrapPointHorizontally:aRect.origin];
+    
+    NSLog(@"Projected bounds.  Scale x: %f, y: %f, avg: %f", scaleX, scaleY, metersPerPixel);
 }
 
 - (RMProjectedPoint) projectedCenter

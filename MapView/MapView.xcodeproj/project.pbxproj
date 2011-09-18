@@ -33,6 +33,11 @@
 
 /* Begin PBXBuildFile section */
 		090FE3140ECD71A500035FBC /* RMTilesUpdateDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 090FE3130ECD71A500035FBC /* RMTilesUpdateDelegate.h */; };
+		0C3B90D21426436F009D4AFD /* RMProjectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C3B90D11426436E009D4AFD /* RMProjectionTests.m */; };
+		0C3B90D31426436F009D4AFD /* RMProjectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0C3B90D11426436E009D4AFD /* RMProjectionTests.m */; };
+		0C3B90D4142644B8009D4AFD /* libMapView.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F31EFA1331050A00122B16 /* libMapView.a */; };
+		0C3B90D6142644CB009D4AFD /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C3B90D5142644CB009D4AFD /* libsqlite3.dylib */; };
+		0C3B90D8142644D2009D4AFD /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C3B90D7142644D2009D4AFD /* QuartzCore.framework */; };
 		126693040EB76C0B00E002D5 /* RMConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 126692A00EB75C0A00E002D5 /* RMConfiguration.m */; };
 		17157D88133BBC8300E28941 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		17157D89133BBC8300E28941 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -244,6 +249,10 @@
 		090C948B0EC23FCD003AEE25 /* RMMarkerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMMarkerManager.h; sourceTree = "<group>"; };
 		090C948C0EC23FCD003AEE25 /* RMMarkerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMMarkerManager.m; sourceTree = "<group>"; };
 		090FE3130ECD71A500035FBC /* RMTilesUpdateDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMTilesUpdateDelegate.h; sourceTree = "<group>"; };
+		0C3B90D01426436E009D4AFD /* RMProjectionTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMProjectionTests.h; sourceTree = "<group>"; };
+		0C3B90D11426436E009D4AFD /* RMProjectionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMProjectionTests.m; sourceTree = "<group>"; };
+		0C3B90D5142644CB009D4AFD /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		0C3B90D7142644D2009D4AFD /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		1266929F0EB75C0A00E002D5 /* RMConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMConfiguration.h; sourceTree = "<group>"; };
 		126692A00EB75C0A00E002D5 /* RMConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMConfiguration.m; sourceTree = "<group>"; };
 		12F2031E0EBB65E9003D7B6B /* RMMapViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMMapViewDelegate.h; sourceTree = "<group>"; };
@@ -414,6 +423,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0C3B90D8142644D2009D4AFD /* QuartzCore.framework in Frameworks */,
+				0C3B90D6142644CB009D4AFD /* libsqlite3.dylib in Frameworks */,
+				0C3B90D4142644B8009D4AFD /* libMapView.a in Frameworks */,
 				17157D88133BBC8300E28941 /* UIKit.framework in Frameworks */,
 				17157D89133BBC8300E28941 /* Foundation.framework in Frameworks */,
 				17157D8A133BBC8300E28941 /* CoreGraphics.framework in Frameworks */,
@@ -485,7 +497,6 @@
 			children = (
 				3866784C0F6B9B9200C56B17 /* MapView.framework */,
 				2BF3078F0F8AC5C0007014EE /* RM Unit Tests.app */,
-				17F31EFA1331050A00122B16 /* libMapView.a */,
 				17157D87133BBC8300E28941 /* MapViewTests.octest */,
 			);
 			name = Products;
@@ -494,6 +505,9 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				0C3B90D7142644D2009D4AFD /* QuartzCore.framework */,
+				0C3B90D5142644CB009D4AFD /* libsqlite3.dylib */,
+				17F31EFA1331050A00122B16 /* libMapView.a */,
 				2BF0E4540F73119C0095A926 /* Documentation */,
 				2B246B230F8AE20300A7D55D /* Testing */,
 				B8C9740D0E8A196E007D16AD /* Map */,
@@ -530,6 +544,8 @@
 				17157D7F133BBAD800E28941 /* RMFoundationTests.h */,
 				17157D80133BBAD800E28941 /* RMFoundationTests.m */,
 				2BF306BF0F8ABC35007014EE /* Google Toolbox for Mac (unit testing) */,
+				0C3B90D01426436E009D4AFD /* RMProjectionTests.h */,
+				0C3B90D11426436E009D4AFD /* RMProjectionTests.m */,
 			);
 			name = Testing;
 			sourceTree = "<group>";
@@ -1086,6 +1102,7 @@
 			files = (
 				17157D99133BBCEF00E28941 /* RMFoundationTests.m in Sources */,
 				17157D9A133BBD0500E28941 /* RMFoundation.c in Sources */,
+				0C3B90D21426436F009D4AFD /* RMProjectionTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1144,6 +1161,7 @@
 				2599740B12EB967600816331 /* RMSpatialCloudMapSource.m in Sources */,
 				DD55FD1612FB40E000B6FE24 /* RMMBTilesTileSource.m in Sources */,
 				17157D9B133BBD0700E28941 /* RMFoundation.c in Sources */,
+				0C3B90D31426436F009D4AFD /* RMProjectionTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
