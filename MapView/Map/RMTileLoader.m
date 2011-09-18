@@ -139,21 +139,21 @@
 	if ([self screenIsLoaded])
 		return NO;
 
-
+    return YES;
 }
 -(void) updateLoadedImages
 {
 	if (![self shouldLoadImages])
         return;
-	
+    
     // Create a tile rectangle for the current region and zoom level of the map.
     RMTileRect newTileRect = [content tileBounds];
-	
+    
     // Ge the list of images that are already on the screen, and add new ones to canvas
     // the newTileRect with tile images.
-	RMTileImageSet *images = [content imagesOnScreen];
-	images.zoom = newTileRect.origin.tile.zoom;
-	CGRect newLoadedBounds = [images addTiles:newTileRect ToDisplayIn: [content screenBounds]];
+    RMTileImageSet *images = [content imagesOnScreen];
+    images.zoom = newTileRect.origin.tile.zoom;
+    CGRect newLoadedBounds = [images addTiles:newTileRect ToDisplayIn: [content screenBounds]];
 	
     // Get rid of images that are outside of the newTileRect.
     // TODO: explain-- for some reason, we also check to make sure loadedTiles.origin.tile is not a dummy tile
@@ -165,11 +165,11 @@
 	}
 	
     // Finally, update the state of this object to reflect the changes in bounds and tiles.
-	loadedBounds = newLoadedBounds;
-	loadedZoom = newTileRect.origin.tile.zoom;
-	loadedTileRect = newTileRect;
+    loadedBounds = newLoadedBounds;
+    loadedZoom = newTileRect.origin.tile.zoom;
+    loadedTileRect = newTileRect;
 	
-	[content tilesUpdatedRegion:newLoadedBounds];
+    [content tilesUpdatedRegion:newLoadedBounds];
 }
 
 #pragma mark -
