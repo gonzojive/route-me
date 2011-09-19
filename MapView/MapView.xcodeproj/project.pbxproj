@@ -253,6 +253,7 @@
 		0C3B90D11426436E009D4AFD /* RMProjectionTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMProjectionTests.m; sourceTree = "<group>"; };
 		0C3B90D5142644CB009D4AFD /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		0C3B90D7142644D2009D4AFD /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		0C5C411F1427FE47003DC29C /* routeme-DoxygenLayout.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "routeme-DoxygenLayout.xml"; sourceTree = "<group>"; };
 		1266929F0EB75C0A00E002D5 /* RMConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMConfiguration.h; sourceTree = "<group>"; };
 		126692A00EB75C0A00E002D5 /* RMConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMConfiguration.m; sourceTree = "<group>"; };
 		12F2031E0EBB65E9003D7B6B /* RMMapViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMMapViewDelegate.h; sourceTree = "<group>"; };
@@ -562,6 +563,7 @@
 		2BF0E4540F73119C0095A926 /* Documentation */ = {
 			isa = PBXGroup;
 			children = (
+				0C5C411F1427FE47003DC29C /* routeme-DoxygenLayout.xml */,
 				B8C9740E0E8A198F007D16AD /* README.txt */,
 				2B2BD41E0F79A95500B8B9A7 /* routeme.doxygen */,
 			);
@@ -1065,7 +1067,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# patterned after http://developer.apple.com/tools/creatingdocsetswithdoxygen.html\n#  Append the proper input/output directories and docset info to the config file.\n#  This works even though values are assigned higher up in the file. Easier than sed.\n\ncp $SOURCE_ROOT/routeme.doxygen $TEMP_DIR/doxygen.config\n\necho \"INPUT = $SOURCE_ROOT\" >> $TEMP_DIR/doxygen.config\necho \"OUTPUT_DIRECTORY = $SYMROOT/RouteMeDoxygen\" >> $TEMP_DIR/doxygen.config\necho \"GENERATE_DOCSET        = YES\" >> $TEMP_DIR/doxygen.config\necho \"DOCSET_BUNDLE_ID       = com.routeme.RouteMe\" >> $TEMP_DIR/doxygen.config\n\n#  Run doxygen on the updated config file.\n\n$DOXYGEN_PATH $TEMP_DIR/doxygen.config\n\nopen $SYMROOT/RouteMeDoxygen/html/index.html\n\nmake -C $TEMP_DIR/DoxygenDocs.docset/html install\n\nexit 0\n";
+			shellScript = "# patterned after http://developer.apple.com/tools/creatingdocsetswithdoxygen.html\n#  Append the proper input/output directories and docset info to the config file.\n#  This works even though values are assigned higher up in the file. Easier than sed.\n\ncp $SOURCE_ROOT/routeme-DoxygenLayout.xml $TEMP_DIR/routeme-DoxygenLayout.xml\ncp $SOURCE_ROOT/routeme.doxygen $TEMP_DIR/doxygen.config\ncp $SOURCE_ROOT/routeme-DoxygenStylesheet.css $TEMP_DIR/routeme-DoxygenStylesheet.css\n\necho \"INPUT = $SOURCE_ROOT\" >> $TEMP_DIR/doxygen.config\necho \"OUTPUT_DIRECTORY = $SYMROOT/RouteMeDoxygen\" >> $TEMP_DIR/doxygen.config\necho \"GENERATE_DOCSET        = YES\" >> $TEMP_DIR/doxygen.config\necho \"DOCSET_BUNDLE_ID       = com.routeme.RouteMe\" >> $TEMP_DIR/doxygen.config\n\n#  Run doxygen on the updated config file.\n\n$DOXYGEN_PATH $TEMP_DIR/doxygen.config\n\nopen $SYMROOT/RouteMeDoxygen/html/index.html\n\nmake -C $TEMP_DIR/DoxygenDocs.docset/html install\n\nexit 0\n";
 		};
 		2BF307960F8AC60C007014EE /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
