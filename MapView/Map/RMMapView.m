@@ -43,7 +43,14 @@
 - (void)stopDeceleration;
 @end
 
+#pragma mark -
+#pragma mark Constants
+#define kDefaultDecelerationFactor .88f
+#define kMinDecelerationDelta 0.01f
+
 @implementation RMMapView
+#pragma mark -
+#pragma mark Simple properties
 @synthesize contents;
 
 @synthesize decelerationFactor;
@@ -55,42 +62,19 @@
 @synthesize enableZoom;
 @synthesize enableRotate;
 
-#pragma mark --- begin constants ----
-#define kDefaultDecelerationFactor .88f
-#define kMinDecelerationDelta 0.01f
-#pragma mark --- end constants ----
-
 - (RMMarkerManager*)markerManager
 {
   return self.contents.markerManager;
 }
 
--(void) performInitialSetup
-{
-	LogMethod();
-
-	enableDragging = YES;
-	enableZoom = YES;
-	enableRotate = NO;
-	decelerationFactor = kDefaultDecelerationFactor;
-	deceleration = NO;
-	
-	//	[self recalculateImageSet];
-	
-	if (enableZoom || enableRotate)
-		[self setMultipleTouchEnabled:TRUE];
-	
-	self.backgroundColor = [UIColor grayColor];
-	
-	_constrainMovement=NO;
-	
-//	[[NSURLCache sharedURLCache] removeAllCachedResponses];
-}
-
+#pragma mark -
+#pragma mark Initialization and deallocation
 - (id)initWithFrame:(CGRect)frame
 {
 	LogMethod();
-	if (self = [super initWithFrame:frame]) {
+    self = [super initWithFrame:frame];
+	if (self)
+    {
 		[self performInitialSetup];
 	}
 	return self;
@@ -108,9 +92,34 @@
 	return self;
 }
 
-//=========================================================== 
-//  contents 
-//=========================================================== 
+-(void) performInitialSetup
+{
+	LogMethod();
+    
+	enableDragging = YES;
+	enableZoom = YES;
+	enableRotate = NO;
+	decelerationFactor = kDefaultDecelerationFactor;
+	deceleration = NO;
+    
+	if (enableZoom || enableRotate)
+		[self setMultipleTouchEnabled:TRUE];
+	
+	self.backgroundColor = [UIColor grayColor];
+	
+	_constrainMovement=NO;
+}
+
+
+-(void) dealloc
+{
+	LogMethod();
+	self.contents = nil;
+	[super dealloc];
+}
+
+#pragma mark -
+#pragma mark Contents
 - (RMMapContents *)contents
 {
     if (!_contentsIsSet) {
@@ -131,25 +140,8 @@
     }
 }
 
--(void) dealloc
-{
-	LogMethod();
-	self.contents = nil;
-	[super dealloc];
-}
-
--(void) drawRect: (CGRect) rect
-{
-	[self.contents drawRect:rect];
-}
-
--(NSString*) description
-{
-	CGRect bounds = [self bounds];
-	return [NSString stringWithFormat:@"MapView at %.0f,%.0f-%.0f,%.0f", bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height];
-}
-
-/// Forward invocations to RMMapContents
+#pragma mark -
+#pragma mark Forward invocations to RMMapContents
 - (void)forwardInvocation:(NSInvocation *)invocation
 {
     SEL aSelector = [invocation selector];
@@ -168,8 +160,23 @@
 		return [self.contents methodSignatureForSelector:aSelector];
 }
 
-#pragma mark Delegate 
+#pragma mark -
+#pragma mark Rendering
+-(void) drawRect: (CGRect) rect
+{
+	[self.contents drawRect:rect];
+}
 
+#pragma mark -
+#pragma mark Debugging
+-(NSString*) description
+{
+	CGRect bounds = [self bounds];
+	return [NSString stringWithFormat:@"MapView at %.0f,%.0f-%.0f,%.0f", bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height];
+}
+
+#pragma mark -
+#pragma mark Delegate 
 @dynamic delegate;
 
 - (void) setDelegate: (id<RMMapViewDelegate>) _delegate
@@ -207,6 +214,7 @@
 	return delegate;
 }
 
+#pragma mark -
 #pragma mark Movement
 
 -(void) moveToProjectedPoint: (RMProjectedPoint) aPoint
@@ -370,7 +378,7 @@
 	}
 }
 
-
+#pragma mark -
 #pragma mark RMMapContentsAnimationCallback methods
 
 - (void)animationFinishedWithZoomFactor:(float)zoomFactor near:(CGPoint)p
@@ -383,8 +391,8 @@
 	if (_delegateHasMapViewRegionDidChange) [delegate mapViewRegionDidChange:self];
 }
 
+#pragma mark -
 #pragma mark Event handling
-
 - (RMGestureDetails) gestureDetails: (NSSet*) touches
 {
 	RMGestureDetails gesture;
@@ -682,8 +690,8 @@
     return YES;
 }
 
+#pragma mark -
 #pragma mark Deceleration
-
 - (void)startDecelerationWithDelta:(CGSize)delta {
 	if (ABS(delta.width) >= 1.0f && ABS(delta.height) >= 1.0f) {
 		_decelerationDelta = delta;

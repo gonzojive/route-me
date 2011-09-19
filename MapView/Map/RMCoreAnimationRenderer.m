@@ -35,6 +35,8 @@
 
 @implementation RMCoreAnimationRenderer
 
+#pragma mark -
+#pragma mark Initialization and deallocation
 - (id) initWithContent: (RMMapContents *)_contents
 {
 	if (![super initWithContent:_contents])
@@ -68,51 +70,26 @@
 	[super dealloc];
 }
 
+#pragma mark -
+#pragma mark Adding and removing tiles
 /// \bug this is a no-op
 -(void)mapImageLoaded: (NSNotification*)notification
 {
 }
 
-- (id<CAAction>)actionForLayer:(CALayer *)theLayer
-                        forKey:(NSString *)key
-{
-	if (theLayer == layer)
-	{
-//		RMLog(@"base layer key: %@", key);
-		return nil;
-	}
-	
-	//	|| [key isEqualToString:@"onLayout"]
-	if ([key isEqualToString:@"position"]
-		|| [key isEqualToString:@"bounds"])
-		return nil;
-//		return (id<CAAction>)[NSNull null];
-	else
-	{
-//		RMLog(@"key: %@", key);
-		
-		return nil;
-	}
-}
-
 - (void)tileAdded: (RMTile) tile WithImage: (RMTileImage*) image
 {
-//	RMLog(@"tileAdded: %d %d %d at %f %f %f %f", tile.x, tile.y, tile.zoom, image.screenLocation.origin.x, image.screenLocation.origin.y,
-//		  image.screenLocation.size.width, image.screenLocation.size.height);
-	
-//	RMLog(@"tileAdded");
-	
 	NSUInteger min = 0, max = [tiles count];
 	CALayer *sublayer = [image layer];
-
+    
 	sublayer.delegate = self;
-
+    
 	while (min < max) {
 		// Binary search for insertion point
 		NSUInteger pivot = (min + max) / 2;
 		RMTileImage *other = [tiles objectAtIndex:pivot];
 		RMTile otherTile = other.tile;
-
+        
 		if (otherTile.zoom <= tile.zoom) {
 			min = pivot + 1;
 		}
@@ -120,7 +97,7 @@
 			max = pivot;
 		}
 	}
-
+    
 	[tiles insertObject:image atIndex:min];
 	[layer insertSublayer:sublayer atIndex:min];
 }
@@ -128,12 +105,12 @@
 -(void) tileRemoved: (RMTile) tile
 {
 	RMTileImage *image = nil;
-
+    
 	NSUInteger i = [tiles count];
 	while (i--)
 	{
 		RMTileImage *potential = [tiles objectAtIndex:i];
-
+        
 		if (RMTilesEqual(tile, potential.tile))
 		{
 			[tiles removeObjectAtIndex:i];
@@ -142,12 +119,19 @@
 		}
 	}
 	
-//	RMLog(@"tileRemoved: %d %d %d at %f %f %f %f", tile.x, tile.y, tile.zoom, image.screenLocation.origin.x, image.screenLocation.origin.y,
-//		  image.screenLocation.size.width, image.screenLocation.size.height);
-	
 	[[image layer] removeFromSuperlayer];
 }
 
+#pragma mark -
+#pragma mark Core animation actions
+- (id<CAAction>)actionForLayer:(CALayer *)theLayer
+                        forKey:(NSString *)key
+{
+	return nil;
+}
+
+#pragma mark -
+#pragma mark Misc.
 - (void)setFrame:(CGRect)frame
 {
 	layer.frame = [content screenBounds];
