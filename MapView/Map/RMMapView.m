@@ -41,6 +41,7 @@
 - (void)startDecelerationWithDelta:(CGSize)delta;
 - (void)incrementDeceleration:(NSTimer *)timer;
 - (void)stopDeceleration;
+- (void)performInitialSetup;
 @end
 
 #pragma mark -
@@ -85,7 +86,9 @@
 {
 	WarnDeprecated();
 	LogMethod();
-	if (self = [super initWithFrame:frame]) {
+    self = [super initWithFrame:frame];
+	if (self)
+    {
 		[self performInitialSetup];
 	}
 	[self moveToLatLong:latlon];

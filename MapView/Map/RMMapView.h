@@ -152,7 +152,7 @@ typedef struct {
 	
 	BOOL _contentsIsSet; // "contents" must be set, but is initialized lazily to allow apps to override defaults in -awakeFromNib
 }
-
+ 
 /// Any other functionality you need to manipulate the map you can access through this
 /// property. The RMMapContents class holds the actual map bits.
 @property (nonatomic, retain) RMMapContents *contents;
@@ -174,9 +174,9 @@ typedef struct {
 
 - (id)initWithFrame:(CGRect)frame WithLocation:(CLLocationCoordinate2D)latlong;
 
-/// recenter the map on #latlong, expressed as CLLocationCoordinate2D (latitude/longitude)
+/// Recenter the map on latlong, expressed as CLLocationCoordinate2D.
 - (void)moveToLatLong: (CLLocationCoordinate2D)latlong;
-/// recenter the map on #aPoint, expressed in projected meters
+/// Recenter the map on aPoint, expressed in projected meters.
 - (void)moveToProjectedPoint: (RMProjectedPoint)aPoint;
 
 - (void)moveBy: (CGSize) delta;
@@ -187,9 +187,9 @@ typedef struct {
 - (void)zoomByFactor: (float) zoomFactor near:(CGPoint) aPoint;
 - (void)zoomByFactor: (float) zoomFactor near:(CGPoint) aPoint animated:(BOOL)animated;
 
-- (void)didReceiveMemoryWarning;
 
 - (void)setRotation:(CGFloat)angle;
 
+- (void)didReceiveMemoryWarning;
 
 @end
