@@ -42,7 +42,9 @@ typedef struct {
 /*! \struct RMProjectedRect 
  \brief location and size, in projected meters, paralleling CGRect */
 typedef struct {
+    /// The southwest corner of the rectangle.
 	RMProjectedPoint origin;
+    /// The size of the the rectangle in projected meters.
 	RMProjectedSize size;
 } RMProjectedRect;
 
