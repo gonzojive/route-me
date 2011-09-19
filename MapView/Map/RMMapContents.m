@@ -1014,10 +1014,6 @@ static BOOL _performExpensiveOperations = YES;
 - (void)zoomWithRMMercatorRectBounds:(RMProjectedRect)bounds
 {
 	[self setProjectedBounds:bounds];
-//	[overlay correctPositionOfAllSublayers];
-//	[tileLoader reload];
-//	[renderer setNeedsDisplay];
-    [self.imagesOnScreen removeAllTiles]; // DEBUG GET RID OF ME
 	[overlay correctPositionOfAllSublayers];
 	[tileLoader reload];
 	[renderer setNeedsDisplay];
