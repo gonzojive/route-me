@@ -27,6 +27,7 @@
 
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
+#import "RMFoundation.h"
 
 @interface RMMapLayer : CAScrollLayer
 {
@@ -37,7 +38,7 @@
 
 @end
 
-#import "RMFoundation.h"
+
 @protocol RMMovingMapLayer
 
 @property (assign, nonatomic) RMProjectedPoint projectedLocation;

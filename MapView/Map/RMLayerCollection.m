@@ -32,6 +32,9 @@
 
 @implementation RMLayerCollection
 
+#pragma mark -
+#pragma mark Initializatio and deallocation
+
 - (id)initForContents: (RMMapContents *)_contents
 {
 	if (![super init])
@@ -52,24 +55,8 @@
 	[super dealloc];
 }
 
-
-- (void)correctScreenPosition: (CALayer *)layer
-{
-	if ([layer conformsToProtocol:@protocol(RMMovingMapLayer)])
-	{
-		// Kinda ugly.
-		CALayer<RMMovingMapLayer>* layer_with_proto = (CALayer<RMMovingMapLayer>*)layer;
-		if(layer_with_proto.enableDragging){
-			RMProjectedPoint location = [layer_with_proto projectedLocation];
-			layer_with_proto.position = [[mapContents mercatorToScreenProjection] projectXYPoint:location];
-		}
-		if(!layer_with_proto.enableRotation){
-			[layer_with_proto setAffineTransform:rotationTransform];
-		}
-	}
-}
-
-
+#pragma mark -
+#pragma mark Inserting, removing, and setting CALayer sublayers
 - (void)setSublayers: (NSArray*)array
 {
 	for (CALayer *layer in array)
@@ -140,12 +127,8 @@
 }
 }
 
-/*
-- (void)insertSublayer:(RMMapLayer*) layer below:(RMMapLayer*)sibling;
-- (void)insertSublayer:(RMMapLayer*) layer above:(RMMapLayer*)sibling;
-- (void)removeSublayer:(RMMapLayer*) layer;
- */
-
+#pragma mark -
+#pragma mark Manipulating the displayed map area
 - (void)moveToProjectedPoint: (RMProjectedPoint)aPoint
 {
 	/// \bug TODO: Test this. Does it work?
@@ -186,9 +169,28 @@
 }
 }
 
-- (BOOL) hasSubLayer:(CALayer *)layer
+
+- (void)correctScreenPosition: (CALayer *)layer
 {
-	return [sublayers containsObject:layer];
+    // RMMovingLayers are anchored to a particular RMProjectedPoint in the map view.
+    // 
+    // For layers that conform to RMMovingMapLayer, update the position (as in CALayer position)
+    // to be the CALayer position of the projected point.
+	if ([layer conformsToProtocol:@protocol(RMMovingMapLayer)])
+	{
+		// Kinda ugly.
+		CALayer<RMMovingMapLayer>* layer_with_proto = (CALayer<RMMovingMapLayer>*)layer;
+		if(layer_with_proto.enableDragging)
+        {
+			RMProjectedPoint location = [layer_with_proto projectedLocation];
+            CGPoint locationInView = [[mapContents mercatorToScreenProjection] projectXYPoint:location];
+			layer_with_proto.position = locationInView;
+		}
+		if(!layer_with_proto.enableRotation)
+        {
+			[layer_with_proto setAffineTransform:rotationTransform];
+		}
+	}
 }
 
 - (void) setRotationOfAllSublayers:(float) angle
@@ -205,6 +207,8 @@
 	}
 }
 
+#pragma mark -
+#pragma mark Layer ordering
 NSInteger layerSort(id num1, id num2, void *context) {
 	if ([num1 isKindOfClass:[RMMarker class]] && [num2 isKindOfClass:[RMMarker class]]) {
 		// if both are markers, order based on vertical map position
@@ -235,6 +239,11 @@ NSInteger layerSort(id num1, id num2, void *context) {
 
 - (void)orderLayers {
 	self.sublayers = [self.sublayers sortedArrayUsingFunction:layerSort context:NULL];
+}
+
+- (BOOL) hasSubLayer:(CALayer *)layer
+{
+	return [sublayers containsObject:layer];
 }
 
 @end
