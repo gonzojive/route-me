@@ -34,6 +34,8 @@
 
 @implementation RMPath
 
+#pragma mark -
+#pragma mark Simple properties
 @synthesize scaleLineWidth;
 @synthesize projectedLocation;
 @synthesize enableDragging;
@@ -43,6 +45,8 @@
 
 #define kDefaultLineWidth 2
 
+#pragma mark -
+#pragma mark Initialization and deallocation
 - (id) initWithContents: (RMMapContents*)aContents
 {
 	if (![super init])
@@ -93,11 +97,15 @@
 	[super dealloc];
 }
 
+#pragma mark -
+#pragma mark Animation?
 - (id<CAAction>)actionForKey:(NSString *)key
 {
 	return nil;
 }
 
+#pragma mark -
+#pragma mark Drawing
 - (void) recalculateGeometry
 {
 	RMMercatorToScreenProjection *projection = [mapContents mercatorToScreenProjection];
@@ -271,6 +279,8 @@
 	CGPathCloseSubpath(path);
 }
 
+#pragma mark -
+#pragma mark Properties that update the view
 - (float) lineWidth
 {
 	return lineWidth;
